@@ -86,7 +86,8 @@ public abstract class Sqlite3GroupManagerDbBase extends GroupManagerDb {
     "  ekeys(                                           \n" +
     "    ekey_id             INTEGER PRIMARY KEY,       \n" +
     "    ekey_name           BLOB NOT NULL,             \n" +
-    "    pub_key             BLOB NOT NULL              \n" +
+    "    pub_key             BLOB NOT NULL,             \n" +
+    "    pri_key             BLOB NOT NULL              \n" +
     "  );                                               \n";
   protected static final String INITIALIZATION6 =
     "CREATE UNIQUE INDEX IF NOT EXISTS                  \n" +
@@ -136,7 +137,7 @@ public abstract class Sqlite3GroupManagerDbBase extends GroupManagerDb {
   protected static final String SELECT_hasEKey =
     "SELECT ekey_id FROM ekeys where ekey_name=?";
   protected static final String INSERT_addEKey =
-    "INSERT INTO ekeys(ekey_name, pub_key) values (?, ?)";
+    "INSERT INTO ekeys(ekey_name, pub_key, pri_key) values (?, ?, ?)";
   protected static final String SELECT_getEKey =
     "SELECT * FROM ekeys where ekey_name=?";
   protected static final String DELETE_cleanEKeys = "DELETE FROM ekeys";

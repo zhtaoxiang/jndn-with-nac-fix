@@ -466,11 +466,12 @@ public class AndroidSqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
     values.put
       ("ekey_name", eKeyName.wireEncode(TlvWireFormat.get()).getImmutableArray());
     values.put("pub_key", publicKey.getImmutableArray());
+    values.put("pri_key", privateKey.getImmutableArray());
     if (database_.insert("ekeys", null, values) < 0)
       throw new GroupManagerDb.Error
         ("AndroidSqlite3GroupManagerDb.addEKey: SQLite error");
 
-    privateKeyBase_.put(new Name(eKeyName), privateKey);
+//    privateKeyBase_.put(new Name(eKeyName), privateKey);
   }
 
   /**
@@ -504,11 +505,13 @@ public class AndroidSqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
 
     // Now use the ekeyId to get the key.
     Cursor cursor = database_.rawQuery
-      ("SELECT pub_key FROM ekeys WHERE ekey_id=?",
+      ("SELECT pub_key, pri_key FROM ekeys WHERE ekey_id=?",
        new String[] { Long.toString(ekeyId) });
     try {
-      if (cursor.moveToNext())
+      if (cursor.moveToNext()) {
         publicKey[0] = new Blob(cursor.getBlob(0));
+        privateKey[0] = new Blob(cursor.getBlob(1));
+      }
       else
         // We don't expect this since we got the keyId.
         throw new GroupManagerDb.Error("getEKey: Cannot find the eKeyName");
@@ -516,7 +519,7 @@ public class AndroidSqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
       cursor.close();
     }
 
-    privateKey[0] = privateKeyBase_.get(eKeyName);
+//    privateKey[0] = privateKeyBase_.get(eKeyName);
   }
 
   /**
@@ -530,7 +533,7 @@ public class AndroidSqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
   {
     database_.execSQL(DELETE_cleanEKeys, new Object[0]);
 
-    privateKeyBase_.clear();
+//    privateKeyBase_.clear();
   }
 
   /**
@@ -546,7 +549,7 @@ public class AndroidSqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
       (DELETE_deleteEKey,
        new Object[] { eKeyName.wireEncode(TlvWireFormat.get()).getImmutableArray() });
 
-    privateKeyBase_.remove(eKeyName);
+//    privateKeyBase_.remove(eKeyName);
   }
 
   /**
@@ -571,5 +574,5 @@ public class AndroidSqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
   }
 
   private final SQLiteDatabase database_;
-  Map<Name, Blob> privateKeyBase_ = new HashMap<>();
+//  Map<Name, Blob> privateKeyBase_ = new HashMap<>();
 }

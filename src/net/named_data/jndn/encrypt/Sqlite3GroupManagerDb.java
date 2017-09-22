@@ -609,6 +609,7 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
       statement.setBytes
         (1, eKeyName.wireEncode(TlvWireFormat.get()).getImmutableArray());
       statement.setBytes(2, publicKey.getImmutableArray());
+      statement.setBytes(3, privateKey.getImmutableArray());
 
       try {
         statement.executeUpdate();
@@ -619,7 +620,7 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
       throw new GroupManagerDb.Error("Sqlite3GroupManagerDb.addEKey: SQLite error: " + exception);
     }
 
-    privateKeyBase_.put(new Name(eKeyName), privateKey);
+//    privateKeyBase_.put(new Name(eKeyName), privateKey);
   }
 
   /**
@@ -642,8 +643,10 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
       try {
         ResultSet result = statement.executeQuery();
 
-        if (result.next())
+        if (result.next()) {
           publicKey[0] = new Blob(result.getBytes(3), false);
+          privateKey[0] = new Blob(result.getBytes(4), false);
+        }
         else
           throw new GroupManagerDb.Error
             ("Sqlite3GroupManagerDb.getEKey: Cannot get the result from the database");
@@ -655,7 +658,7 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
         ("Sqlite3GroupManagerDb.getEKey: SQLite error: " + exception);
     }
 
-    privateKey[0] = privateKeyBase_.get(eKeyName);
+//    privateKey[0] = privateKeyBase_.get(eKeyName);
   }
 
   /**
@@ -680,7 +683,7 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
         ("Sqlite3GroupManagerDb.cleanEKeys: SQLite error: " + exception);
     }
 
-    privateKeyBase_.clear();
+//    privateKeyBase_.clear();
   }
 
   /**
@@ -708,7 +711,7 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
         ("Sqlite3GroupManagerDb.deleteEKey: SQLite error: " + exception);
     }
 
-    privateKeyBase_.remove(eKeyName);
+//    privateKeyBase_.remove(eKeyName);
   }
 
   /**
@@ -742,5 +745,5 @@ public class Sqlite3GroupManagerDb extends Sqlite3GroupManagerDbBase {
   }
 
   private Connection database_ = null;
-  private final HashMap<Name, Blob> privateKeyBase_ = new HashMap<Name, Blob>();
+//  private final HashMap<Name, Blob> privateKeyBase_ = new HashMap<Name, Blob>();
 }
